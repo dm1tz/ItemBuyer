@@ -6,6 +6,5 @@
 	</Configurations>
 
 	<Project Path="ArchiSteamFarm/ArchiSteamFarm/ArchiSteamFarm.csproj" />
-
-	<Project Path="MyAwesomePlugin/MyAwesomePlugin.csproj" />
+	<Project Path="ItemBuyer/ItemBuyer.csproj" />
 </Solution>

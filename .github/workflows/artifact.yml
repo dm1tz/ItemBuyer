@@ -1,0 +1,40 @@
+name: Release artifact
+on:
+  release:
+    types: [published]
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          show-progress: false
+          submodules: recursive
+
+      - name: Parse plugin name from Directory.Build.props
+        id: plugin-name
+        uses: mavrosxristoforos/get-xml-info@cc0a00b30a53c3adf0ea2cbfd8314cea394fbbad # 2.1.0
+        with:
+          xml-file: 'Directory.Build.props'
+          xpath: '//PluginName'
+
+      - name: Download latest artifact
+        uses: dawidd6/action-download-artifact@b6e2e70617bc3265edd6dab6c906732b2f1ae151 # v21
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: ci.yml
+          name: ${{ steps.plugin-name.outputs.info }}
+          check_artifacts: true
+          skip_unpack: true
+
+      - name: Attach artifact to release assets
+        uses: svenstaro/upload-release-action@29e53e917877a24fad85510ded594ab3c9ca12de # v2
+        with:
+          overwrite: true
+          file: ${{ steps.plugin-name.outputs.info }}.zip
