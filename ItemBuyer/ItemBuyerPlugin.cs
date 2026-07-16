@@ -36,7 +36,6 @@ internal sealed class ItemBuyerPlugin : IASF, IGitHubPluginUpdates, IBotCommand2
 			return Task.CompletedTask;
 		}
 
-		// The plugin reads its own section, keyed by the plugin name, from ASF.json's global AdditionalProperties (same convention as ItemFetcher).
 		foreach ((string configProperty, JsonElement configValue) in additionalConfigProperties) {
 			if (configProperty != nameof(ItemBuyerPlugin)) {
 				continue;
