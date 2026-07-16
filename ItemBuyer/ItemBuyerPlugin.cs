@@ -6,6 +6,7 @@ using ArchiSteamFarm.Plugins.Interfaces;
 using ArchiSteamFarm.Steam.Integration;
 using ArchiSteamFarm.Steam.Interaction;
 using ArchiSteamFarm.Steam;
+using ArchiSteamFarm.Web.Responses;
 using ArchiSteamFarm.Web;
 using PluginLocale = ItemBuyer.Localization;
 using SteamKit2;
@@ -29,6 +30,7 @@ internal sealed class ItemBuyerPlugin : IASF, IGitHubPluginUpdates, IBotCommand2
 	public Version Version => typeof(ItemBuyerPlugin).Assembly.GetName().Version ?? throw new InvalidOperationException(nameof(Version));
 
 	internal static ItemBuyerConfig? Config { get; private set; }
+
 	private static readonly SemaphoreSlim BuyItemSemaphore = new(1, 1);
 
 	public Task OnASFInit(IReadOnlyDictionary<string, JsonElement>? additionalConfigProperties = null) {
@@ -125,7 +127,7 @@ internal sealed class ItemBuyerPlugin : IASF, IGitHubPluginUpdates, IBotCommand2
 			_ = BuyItemSemaphore.Release();
 		}
 
-		string response = purchaseResult.Success ? PluginLocale.Strings.FormatBotPurchaseSuccess(quantity, purchaseResult.ItemName, purchaseResult.PriceText) : string.Format(CultureInfo.CurrentCulture, purchaseResult.Error);
+		string response = purchaseResult.Success ? PluginLocale.Strings.FormatBotPurchaseSuccess(quantity, purchaseResult.ItemName, purchaseResult.PriceText) : purchaseResult.Error;
 
 		return bot.Commands.FormatBotResponse(response);
 	}
@@ -158,9 +160,9 @@ internal sealed class ItemBuyerPlugin : IASF, IGitHubPluginUpdates, IBotCommand2
 	}
 
 	private static async Task<PurchaseResult> BuyItem(Bot bot, uint appID, ulong itemID, uint quantity) {
-		Uri buyUri = new(ArchiWebHandler.SteamStoreURL, $"/buyitem/{appID}/{itemID}/{quantity}");
+		Uri buyItemRequest = new(ArchiWebHandler.SteamStoreURL, $"/buyitem/{appID}/{itemID}/{quantity}");
 
-		using ArchiSteamFarm.Web.Responses.HtmlDocumentResponse? buyItemResponse = await bot.ArchiWebHandler.WebBrowser.UrlGetToHtmlDocument(buyUri).ConfigureAwait(false);
+		HtmlDocumentResponse? buyItemResponse = await bot.ArchiWebHandler.WebBrowser.UrlGetToHtmlDocument(buyItemRequest).ConfigureAwait(false);
 
 		if (buyItemResponse?.Content == null) {
 			return PurchaseResult.Failure(string.Format(CultureInfo.CurrentCulture, Strings.ErrorObjectIsNull, nameof(buyItemResponse)));
@@ -177,11 +179,9 @@ internal sealed class ItemBuyerPlugin : IASF, IGitHubPluginUpdates, IBotCommand2
 		}
 
 		// When the wallet balance is insufficient, Steam renders an "Add Funds" button linking to the wallet top-up page.
-		// Scope the lookup to the purchase content so we don't match the wallet link that always exists in the global header.
 		if (buyItemResponse.Content.QuerySelector("#responsive_page_template_content a[href*='addfunds'], #form_authtxn a[href*='addfunds']") != null) {
 			return PurchaseResult.Failure(PluginLocale.Strings.BotInsufficientBalance);
 		}
-
 
 		PurchaseResult result = new(false, PluginLocale.Strings.FormatItemNameFallback(itemID), PluginLocale.Strings.PriceUnknown, string.Empty);
 
@@ -225,15 +225,14 @@ internal sealed class ItemBuyerPlugin : IASF, IGitHubPluginUpdates, IBotCommand2
 
 		string encodedReturnURL = Uri.EscapeDataString(returnURL);
 		string encodedCanceledURL = Uri.EscapeDataString(ArchiWebHandler.SteamStoreURL.AbsoluteUri);
+
 		string? formAction = approvalForm.GetAttribute("action");
 
-		Uri approveUri = !string.IsNullOrEmpty(formAction)
-			? new Uri(ArchiWebHandler.SteamCheckoutURL, formAction)
-			: new Uri(ArchiWebHandler.SteamCheckoutURL, "/checkout/approvetxnsubmit");
+		Uri approveRequest = !string.IsNullOrEmpty(formAction) ? new Uri(ArchiWebHandler.SteamCheckoutURL, formAction) : new Uri(ArchiWebHandler.SteamCheckoutURL, "/checkout/approvetxnsubmit");
 
-		Uri referer = new(ArchiWebHandler.SteamCheckoutURL, $"/checkout/approvetxn/{transactionID}/?returnurl={encodedReturnURL}&canceledurl={encodedCanceledURL}");
+		Uri approveReferer = new(ArchiWebHandler.SteamCheckoutURL, $"/checkout/approvetxn/{transactionID}/?returnurl={encodedReturnURL}&canceledurl={encodedCanceledURL}");
 
-		using ArchiSteamFarm.Web.Responses.HtmlDocumentResponse? approveResponse = await bot.ArchiWebHandler.WebBrowser.UrlPostToHtmlDocument(approveUri, data: form, referer: referer, requestOptions: WebBrowser.ERequestOptions.ReturnRedirections, maxTries: 1).ConfigureAwait(false);
+		HtmlDocumentResponse? approveResponse = await bot.ArchiWebHandler.WebBrowser.UrlPostToHtmlDocument(approveRequest, data: form, referer: approveReferer, requestOptions: WebBrowser.ERequestOptions.ReturnRedirections).ConfigureAwait(false);
 
 		if (approveResponse == null) {
 			return PurchaseResult.Failure(string.Format(CultureInfo.CurrentCulture, Strings.ErrorObjectIsNull, nameof(approveResponse)));
@@ -243,7 +242,9 @@ internal sealed class ItemBuyerPlugin : IASF, IGitHubPluginUpdates, IBotCommand2
 			return PurchaseResult.Failure(PluginLocale.Strings.FormatBotUnexpectedHttpStatus(nameof(approveResponse), (int) approveResponse.StatusCode, approveResponse.StatusCode));
 		}
 
-		using ArchiSteamFarm.Web.Responses.HtmlDocumentResponse? finalizeResponse = await bot.ArchiWebHandler.WebBrowser.UrlGetToHtmlDocument(approveResponse.FinalUri, referer: approveUri, requestOptions: WebBrowser.ERequestOptions.ReturnRedirections, maxTries: 1).ConfigureAwait(false);
+		Uri finalizeRequest = approveResponse.FinalUri;
+
+		HtmlDocumentResponse? finalizeResponse = await bot.ArchiWebHandler.WebBrowser.UrlGetToHtmlDocument(finalizeRequest, referer: approveRequest, requestOptions: WebBrowser.ERequestOptions.ReturnRedirections).ConfigureAwait(false);
 
 		if (finalizeResponse == null) {
 			return PurchaseResult.Failure(string.Format(CultureInfo.CurrentCulture, Strings.ErrorObjectIsNull, nameof(finalizeResponse)));
