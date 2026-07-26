@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/dm1tz/ItemBuyer/compare/0.2.0...0.3.0) (2026-07-26)
+
+
+### Features
+
+* **commands:** add `checkprice` ([#6](https://github.com/dm1tz/ItemBuyer/issues/6)) ([27b31ca](https://github.com/dm1tz/ItemBuyer/commit/27b31ca456835321eea4566cd08d1e275c4935ec))
+
 ## [0.2.0](https://github.com/dm1tz/ItemBuyer/compare/0.1.0...0.2.0) (2026-07-16)
 
 
