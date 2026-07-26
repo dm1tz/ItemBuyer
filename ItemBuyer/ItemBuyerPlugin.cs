@@ -257,16 +257,18 @@ internal sealed class ItemBuyerPlugin : IASF, IGitHubPluginUpdates, IBotCommand2
 
 		PurchaseResult result = new(true, PluginLocale.Strings.FormatItemNameFallback(itemID), PluginLocale.Strings.PriceUnknown, string.Empty);
 
-		string? itemName = buyItemResponse.Content.QuerySelector(".approvetxn_lineitem_description")?.TextContent.Trim();
-
-		if (!string.IsNullOrEmpty(itemName)) {
-			result = result with { ItemName = itemName };
-		}
-
 		string? priceText = buyItemResponse.Content.QuerySelector("#review_total_value, #review_subtotal_value")?.TextContent.Trim();
 
 		if (!string.IsNullOrEmpty(priceText)) {
 			result = result with { PriceText = priceText };
+
+			IElement? purchasedItem = buyItemResponse.Content.QuerySelectorAll(".approvetxn_lineitem_row").FirstOrDefault(row => string.Equals(row.QuerySelector(".approvetxn_lineitem_price")?.TextContent.Trim(), priceText, StringComparison.Ordinal));
+
+			string? itemName = purchasedItem?.QuerySelector(".approvetxn_lineitem_description")?.TextContent.Trim();
+
+			if (!string.IsNullOrEmpty(itemName)) {
+				result = result with { ItemName = itemName };
+			}
 		}
 
 		if (checkPrice) {
