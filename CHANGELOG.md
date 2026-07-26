@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/dm1tz/ItemBuyer/compare/0.3.0...0.3.1) (2026-07-26)
+
+
+### Bug Fixes
+
+* **items:** select purchased item name ([#8](https://github.com/dm1tz/ItemBuyer/issues/8)) ([0714322](https://github.com/dm1tz/ItemBuyer/commit/07143221cdfa7ddfe2ac5f508f289ce88c6f8c14))
+
 ## [0.3.0](https://github.com/dm1tz/ItemBuyer/compare/0.2.0...0.3.0) (2026-07-26)
 
 
