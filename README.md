@@ -4,12 +4,12 @@
 
 ## Configuration
 
-ItemExchanger configuration is appended to `ASF.json` and has the following structure:
+ItemBuyer configuration is appended to `ASF.json` and has the following structure:
 ```json
 {
 	...
 	"ItemBuyerPlugin": {
-		"BuyItemLimiterDelay": 1,
+		"BuyItemLimiterDelay": 1
 	}
 }
 ```
@@ -24,3 +24,4 @@ All options are explained below:
 Command | Alias | Access | Description
 --- | --- | --- | ---
 `buyitem [Bots] <AppID> <ItemDefID> <Quantity>` | `bi` | `Master` | Purchases specified item for given bot instances.
+`checkprice [Bots] <AppID> <ItemDefID> <Quantity>` | `cp` | `FamilySharing` | Reports specified item's total price for given bot instances.
