@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/dm1tz/ItemBuyer/compare/0.3.1...0.4.0) (2026-07-27)
+
+
+### Features
+
+* bump ([8c9722e](https://github.com/dm1tz/ItemBuyer/commit/8c9722e3508054ee8e8cc9a7da7686c1af92741e))
+
 ## [0.3.1](https://github.com/dm1tz/ItemBuyer/compare/0.3.0...0.3.1) (2026-07-26)
 
 
