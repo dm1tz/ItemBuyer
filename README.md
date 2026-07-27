@@ -23,5 +23,6 @@ All options are explained below:
 
 Command | Alias | Access | Description
 --- | --- | --- | ---
-`buyitem [Bots] <AppID> <ItemDefID> <Quantity>` | `bi` | `Master` | Purchases specified item for given bot instances.
-`checkprice [Bots] <AppID> <ItemDefID> <Quantity>` | `cp` | `FamilySharing` | Reports specified item's total price for given bot instances.
+`buyitem [Bots] <AppID> <ItemDefID> <Quantity>` | `bi`, `ibb` | `Master` | Purchases specified item for given bot instances.
+`checkprice [Bots] <AppID> <ItemDefID> <Quantity>` | `cp`, `ibc` | `FamilySharing` | Reports specified item's total price for given bot instances.
+`ibversion` | `ibv` | `FamilySharing` | Prints the plugin version.

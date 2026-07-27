@@ -73,15 +73,15 @@ internal sealed class ItemBuyerPlugin : IASF, IGitHubPluginUpdates, IBotCommand2
 		}
 
 		return args[0].ToUpperInvariant() switch {
-			"BUYITEM" or "BI" when args.Length == 5 =>
+			"BUYITEM" or "BI" or "IBB" when args.Length == 5 =>
 				await ResponseBuyItem(access, args[1], args[2], args[3], args[4], steamID).ConfigureAwait(false),
-			"BUYITEM" or "BI" when args.Length == 4 =>
+			"BUYITEM" or "BI" or "IBB" when args.Length == 4 =>
 				await ResponseBuyItem(bot, access, args[1], args[2], args[3]).ConfigureAwait(false),
-			"CHECKPRICE" or "CP" when args.Length == 5 =>
+			"CHECKPRICE" or "CP" or "IBC" when args.Length == 5 =>
 				await ResponseCheckPrice(access, args[1], args[2], args[3], args[4], steamID).ConfigureAwait(false),
-			"CHECKPRICE" or "CP" when args.Length == 4 =>
+			"CHECKPRICE" or "CP" or "IBC" when args.Length == 4 =>
 				await ResponseCheckPrice(bot, access, args[1], args[2], args[3]).ConfigureAwait(false),
-			"BIVERSION" or "BIV" => ResponseVersion(access),
+			"IBVERSION" or "IBV" => ResponseVersion(access),
 			_ => null
 		};
 	}
