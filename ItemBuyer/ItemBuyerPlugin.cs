@@ -153,7 +153,7 @@ internal sealed class ItemBuyerPlugin : IASF, IGitHubPluginUpdates, IBotCommand2
 		HashSet<Bot>? bots = Bot.GetBots(botNames);
 
 		if ((bots == null) || (bots.Count == 0)) {
-			return access >= EAccess.Owner ? Commands.FormatStaticResponse(string.Format(CultureInfo.CurrentCulture, Strings.BotNotFound, botNames)) : null;
+			return access >= EAccess.Master ? Commands.FormatStaticResponse(string.Format(CultureInfo.CurrentCulture, Strings.BotNotFound, botNames)) : null;
 		}
 
 		IList<string?> results = await Utilities.InParallel(bots.Select(bot => ResponseBuyItem(bot, Commands.GetProxyAccess(bot, access, steamID), targetAppID, targetItemDefID, targetQuantity))).ConfigureAwait(false);
@@ -226,7 +226,7 @@ internal sealed class ItemBuyerPlugin : IASF, IGitHubPluginUpdates, IBotCommand2
 		HashSet<Bot>? bots = Bot.GetBots(botNames);
 
 		if ((bots == null) || (bots.Count == 0)) {
-			return access >= EAccess.Owner ? Commands.FormatStaticResponse(string.Format(CultureInfo.CurrentCulture, Strings.BotNotFound, botNames)) : null;
+			return access >= EAccess.FamilySharing ? Commands.FormatStaticResponse(string.Format(CultureInfo.CurrentCulture, Strings.BotNotFound, botNames)) : null;
 		}
 
 		IList<string?> results = await Utilities.InParallel(bots.Select(bot => ResponseCheckPrice(bot, Commands.GetProxyAccess(bot, access, steamID), targetAppID, targetItemDefID, targetQuantity))).ConfigureAwait(false);
