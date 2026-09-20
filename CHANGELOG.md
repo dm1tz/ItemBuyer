@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/dm1tz/ItemBuyer/compare/0.4.0...0.4.1) (2026-09-20)
+
+
+### Bug Fixes
+
+* **commands:** align missing-bot access checks ([#17](https://github.com/dm1tz/ItemBuyer/issues/17)) ([0806f42](https://github.com/dm1tz/ItemBuyer/commit/0806f42513130d18550f187e8266958c6ad5ae7a))
+
 ## [0.4.0](https://github.com/dm1tz/ItemBuyer/compare/0.3.1...0.4.0) (2026-07-27)
 
 
